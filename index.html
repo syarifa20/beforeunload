@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Before Unload</title>
+  </head>
+  <body>
+
+    <h1>Before Unload test case</h1>
+    <p>please refresh the page to test case</p>
+    <script>
+      window.addEventListener("beforeunload", function (e) {
+        const formData = new FormData();
+        formData.append("key", "value");
+
+        fetch(`proses.php`, {
+          method: "POST",
+         
+          body: formData,
+          keepalive: true,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            $("#crudModal").modal("hide");
+          })
+          .catch((error) => {
+            console.log("error", error);
+
+            // Handle error
+            if (error.status === 422) {
+              $(".is-invalid").removeClass("is-invalid");
+              $(".invalid-feedback").remove();
+              setErrorMessages(form, error.responseJSON.errors);
+            } else {
+              showDialog(error.responseJSON);
+            }
+          });
+      });
+    </script>
+  </body>
+</html>
